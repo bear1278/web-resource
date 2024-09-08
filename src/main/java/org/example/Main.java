@@ -17,8 +17,9 @@ public class Main extends Frame implements ActionListener{
     Button sea=new Button("Search");
     Button buttonOpen = new Button("Open");
     TextArea txa = new TextArea();
-    String fileToOpen = "";
-    String path= "E:/d disk/учёба/4 курс/АиПРП/lab1/src/source_txt/";
+    boolean CanBeOpened = false;
+    String path= "E:/d disk/учёба/4 курс/АиПРП/lab1/src/source_txt/authors.txt";
+    String HTMLpath= "E:/d disk/учёба/4 курс/АиПРП/lab1/src/result.html";
     public  Main()
     {
         super("my window");
@@ -36,18 +37,6 @@ public class Main extends Frame implements ActionListener{
         buttonOpen.setBounds(220,165,100,20);
         buttonOpen.addActionListener(this);
         txa.setBounds(20,50,300,100);
-        try{
-
-            File f = new File(path);
-            ArrayList<File> files =
-                    new ArrayList<File>(Arrays.asList(f.listFiles()));
-            if (files.size()>0) {
-                fileToOpen = files.getFirst().getName();
-            }
-        }
-        catch (Exception e){
-            System.out.println("error "+e.getMessage());
-        }
 
         this.show();
         this.setLocationRelativeTo(null);
@@ -56,7 +45,8 @@ public class Main extends Frame implements ActionListener{
 
     public void actionPerformed(ActionEvent ae)
     {
-        Map<String, Integer> fileNames = new HashMap<>();
+        int max=0;
+        String resultAuthor="";
         if(ae.getSource()==bex)
             System.exit(0);
         else
@@ -68,89 +58,94 @@ public class Main extends Frame implements ActionListener{
                 System.out.println(keywords[j]);
 
             }
-            File f = new File(path);
-            ArrayList<File> files =
-                    new ArrayList<File>(Arrays.asList(f.listFiles()));
+            File file = new File(path);
             txa.setText("");
-            int max = 0;
-            for (File elem : files)
-            {
-                int zcoincidence = test_url(elem,keywords);
-                if (zcoincidence > max){
-                    max = zcoincidence;
-                    fileToOpen = elem.getName();
+            try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+
+                    String[] parts = line.split(":");
+                    if (parts.length < 2) continue; //
+
+                    String author = parts[0].trim();
+                    String[] books = parts[1].split(",");
+                    int coincidence=test_url(books,keywords);
+                    if (coincidence>max){
+                        max=coincidence;
+                        resultAuthor=author;
+                    }
                 }
-                txa.append("\n"+elem+"  :"+zcoincidence);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (max>0){
+                writeToHtml(HTMLpath,resultAuthor);
+                txa.setText(resultAuthor);
+                CanBeOpened=true;
+            }
+            else{
+                txa.setText("No such author");
+                CanBeOpened=false;
             }
         }
         else
             if (ae.getSource()==buttonOpen){
                 try {
-                    // Specify the .txt file path
-                    File txtFile = new File(path+fileToOpen);
+                    if (!CanBeOpened){
+                        throw new Exception("Nothing to open");
+                    }
+
+                    File file = new File(HTMLpath);
 
                     // Check if Desktop is supported on the current platform
                     if (Desktop.isDesktopSupported()) {
                         Desktop desktop = Desktop.getDesktop();
 
                         // Open the .txt file
-                        if (txtFile.exists()) {
-                            desktop.browse(txtFile.toURI());
+                        if (file.exists()) {
+                            desktop.browse(file.toURI());
                         } else {
-                            System.out.println(fileToOpen);
                             System.out.println("File does not exist");
                         }
                     } else {
                         System.out.println("Desktop is not supported on your platform.");
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     System.out.println("error "+e.getMessage());
+
                 }
             }
     }
 
-    public static int test_url(File elem, String [] keywords)
+
+
+    public static void writeToHtml(String path,String author){
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path,false))) {
+
+                writer.write(author);
+                writer.newLine();
+            System.out.println("File written successfully!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+    public static int test_url(String [] books, String [] keywords)
     {
-        int res=0;
-        URL url = null;
-        URLConnection con = null;
-        int i;
+        int res =0;
         try
         {
-            String ffele=""+elem;
-            url = new URL("file:/"+ffele.trim());
-            con = url.openConnection();
-            File file = new File("./src/result.html");
-            BufferedInputStream bis = new BufferedInputStream(
-                    con.getInputStream());
-            BufferedOutputStream bos = new BufferedOutputStream(
-                    new FileOutputStream(file));
-            String bhtml=""; //file content in byte array
-
-            while ((i = bis.read()) != -1) {
-                bos.write(i);
-                bhtml+=(char)i;
-            }
-            bos.flush();
-            bis.close();
-            String htmlcontent=
-                    (new String(bhtml)).toLowerCase(); //file content in string
-            System.out.println("New url content is: "+htmlcontent);
+            String htmlcontent= String.join(" ",books).toLowerCase();
             for (int j=0;j<keywords.length;j++)
             {
                 if(htmlcontent.indexOf(keywords[j].trim().toLowerCase())>=0)
                     res++;
             }}
-        catch (MalformedInputException malformedInputException)
-        {
-            System.out.println("error "+malformedInputException.getMessage());
-            return -1;
-        }
-        catch (IOException ioException)
-        {
-            System.out.println("error "+ioException.getMessage());
-            return -1;
-        }
         catch(Exception e)
         {
             System.out.println("error "+e.getMessage());
