@@ -36,18 +36,6 @@ public class Main extends Frame implements ActionListener{
         buttonOpen.setBounds(220,165,100,20);
         buttonOpen.addActionListener(this);
         txa.setBounds(20,50,300,100);
-        try{
-
-            File f = new File(path);
-            ArrayList<File> files =
-                    new ArrayList<File>(Arrays.asList(f.listFiles()));
-            if (files.size()>0) {
-                fileToOpen = files.getFirst().getName();
-            }
-        }
-        catch (Exception e){
-            System.out.println("error "+e.getMessage());
-        }
 
         this.show();
         this.setLocationRelativeTo(null);
@@ -86,7 +74,9 @@ public class Main extends Frame implements ActionListener{
         else
             if (ae.getSource()==buttonOpen){
                 try {
-                    // Specify the .txt file path
+                    if (fileToOpen.isEmpty()){
+                        throw new Exception("Nothing to open");
+                    }
                     File txtFile = new File(path+fileToOpen);
 
                     // Check if Desktop is supported on the current platform
@@ -103,8 +93,11 @@ public class Main extends Frame implements ActionListener{
                     } else {
                         System.out.println("Desktop is not supported on your platform.");
                     }
-                } catch (IOException e) {
+
+                } catch (Exception e) {
                     System.out.println("error "+e.getMessage());
+                    txa.setText("");
+                    txa.append("\n"+e);
                 }
             }
     }
