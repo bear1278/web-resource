@@ -18,8 +18,8 @@ public class Main extends Frame implements ActionListener{
     Button buttonOpen = new Button("Open");
     TextArea txa = new TextArea();
     boolean CanBeOpened = false;
-    String path= "E:/d disk/учёба/4 курс/АиПРП/lab1/src/source_txt/authors.txt";
-    String HTMLpath= "E:/d disk/учёба/4 курс/АиПРП/lab1/src/result.html";
+    String path= "./src/source_txt/authors.txt"; // your own path
+    String HTMLpath= "./src/result.html"; //your own path
     public  Main()
     {
         super("my window");
