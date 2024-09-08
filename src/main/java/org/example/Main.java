@@ -70,6 +70,9 @@ public class Main extends Frame implements ActionListener{
                 }
                 txa.append("\n"+elem+"  :"+zcoincidence);
             }
+            if (max==0){
+                fileToOpen = "";
+            }
         }
         else
             if (ae.getSource()==buttonOpen){
