@@ -18,7 +18,7 @@ public class Main extends Frame implements ActionListener{
     Button buttonOpen = new Button("Open");
     TextArea txa = new TextArea();
     String fileToOpen = "";
-    String path= "E:/d disk/учёба/4 курс/АиПРП/lab1/src/source_txt/";
+    String path= "./src/source_txt/"; // your own path
     public  Main()
     {
         super("my window");
