@@ -1,16 +1,16 @@
 package org.example;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.io.*;
+import java.util.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.MalformedInputException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Main extends Frame implements ActionListener{
     Button bex=new Button("Exit");
@@ -49,8 +49,8 @@ public class Main extends Frame implements ActionListener{
         if(ae.getSource()==bex)
             System.exit(0);
         else
-        if (ae.getSource()==sea) {
-            File fileToRead=new File(pathToOpen+fileToOpen);
+        if (ae.getSource()==sea)
+        {
             String [] keywords=txa.getText().split(",");
             for (int j=0;j<keywords.length;j++)
             {
@@ -67,18 +67,12 @@ public class Main extends Frame implements ActionListener{
                 int zcoincidence = test_url(elem,keywords);
                 if (zcoincidence > max){
                     max = zcoincidence;
-                    fileToRead=elem;
-
+                    fileToOpen = elem.getName();
                 }
                 txa.append("\n"+elem+"  :"+zcoincidence);
             }
-
-            if (max>0){
-                fileToOpen = "src/result.html";
-                test_url(fileToRead,keywords);
-            }
-            else{
-                fileToOpen="";
+            if (max==0){
+                fileToOpen = "";
             }
         }
         else
@@ -87,7 +81,7 @@ public class Main extends Frame implements ActionListener{
                     if (fileToOpen.isEmpty()){
                         throw new Exception("Nothing to open");
                     }
-                    File txtFile = new File(pathToOpen+fileToOpen);
+                    File txtFile = new File(path+fileToOpen);
 
                     // Check if Desktop is supported on the current platform
                     if (Desktop.isDesktopSupported()) {
@@ -107,7 +101,7 @@ public class Main extends Frame implements ActionListener{
                 } catch (Exception e) {
                     System.out.println("error "+e.getMessage());
                     txa.setText("");
-                    txa.append("\n"+e.getMessage());
+                    txa.append("\n"+e);
                 }
             }
     }
