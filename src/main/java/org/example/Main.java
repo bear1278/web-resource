@@ -67,12 +67,15 @@ public class Main extends Frame implements ActionListener{
                 int zcoincidence = test_url(elem,keywords);
                 if (zcoincidence > max){
                     max = zcoincidence;
-                    fileToOpen = elem.getName();
+                    f=elem;
                 }
                 txa.append("\n"+elem+"  :"+zcoincidence);
             }
             if (max==0){
                 fileToOpen = "";
+            }else{
+                fileToOpen = "src/result.html";
+                test_url(f,keywords);
             }
         }
         else
@@ -81,7 +84,7 @@ public class Main extends Frame implements ActionListener{
                     if (fileToOpen.isEmpty()){
                         throw new Exception("Nothing to open");
                     }
-                    File txtFile = new File(path+fileToOpen);
+                    File txtFile = new File(pathToOpen+fileToOpen);
 
                     // Check if Desktop is supported on the current platform
                     if (Desktop.isDesktopSupported()) {
